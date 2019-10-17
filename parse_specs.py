@@ -21,14 +21,15 @@ def parse_block(infile):
       n += 1
    return keys, specs
 
-def parse_specfile(filename,blocks_key,blocks_specs):
+def parse_specfile(filename,blocks_key,blocks_specs,verbose=True):
    with open(filename,"r") as infile:
       EOF = False
       while not EOF: 
          line = infile.readline()
          if line == "":
             EOF=True
-            print("EOF reached... End parsing.")
+            if verbose:
+               print("EOF reached... End parsing.")
          else:
             line = line.strip("\n")
             if line == "":
@@ -40,19 +41,20 @@ def parse_specfile(filename,blocks_key,blocks_specs):
                   pass ## For comments
                elif tokens[0] == ".START":
                   newblockname = tokens[1]
-                  print ("Start reading new block ",newblockname)
+                  if verbose:
+                     print ("Start reading new block ",newblockname)
                   newblockkey, newblockspecs = parse_block(infile)
                   blocks_key  [newblockname] = newblockkey
                   blocks_specs[newblockname] = newblockspecs
 
                else:
-                  print ("token not recognizable:", tokens[0])
+                  print ("parse_specfile: token {0} not recognizable".format(tokens[0]))
                   raise AssertionError
       infile.close()
    return blocks_key, blocks_specs
 
-def lookup_spec(groups,key,value,specfile):
-   blocks_key, blocks_specs = parse_specfile(specfile,{},{})
+def lookup_spec(groups,key,value,specfile,verbose=False):
+   blocks_key, blocks_specs = parse_specfile(specfile,{},{},verbose)
    for group in groups:
 
       keys = blocks_key[group]

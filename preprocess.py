@@ -14,13 +14,18 @@ def replace_spec(inputstr,Key,Value):
 class preprocessor:
 
    def __init__(self,templatefile,specfile):
-      self.template = open(templatefile,"r").read()
       self.keys = {}
       self.specs = {}
       self.update_spec(specfile)
+      self.update_template(templatefile)
 
    def update_template(self,templatefile):
-      self.template = open(templatefile,"r").read()
+      if type(templatefile) is str:
+         self.template = open(templatefile,"r").read()
+      else:
+         self.template = ""
+         for tf in templatefile:
+            self.template += open(tf,"r").read()
 
    def update_spec(self,specfile):
       self.keys.clear()
