@@ -28,8 +28,8 @@ class preprocessor:
             self.template += open(tf,"r").read()
 
    def update_spec(self,specfile):
-      self.keys.clear()
-      self.specs.clear()
+      #self.keys.clear()
+      #self.specs.clear()
       if type(specfile) is str:
          specfile = [specfile]
 
@@ -52,11 +52,10 @@ class preprocessor:
 
       speclist = self.specs[sec_name]
       speclist_filtered = []
-      for pattern in keep_regex:
-         prog = re.compile(pattern)
-         speclist_filtered += list(filter(
-                                   lambda x: prog.fullmatch(x[loc_entry]),
-                                   speclist))
+      prog = re.compile(keep_regex)
+      speclist_filtered += list(filter(
+                                lambda x: prog.fullmatch(x[loc_entry]),
+                                speclist))
          
       self.specs[sec_name] = speclist_filtered
    
