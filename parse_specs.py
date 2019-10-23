@@ -1,4 +1,4 @@
-import pandas
+from pandas import DataFrame
 def parse_block(infile):
    keys  = []
    specs = []
@@ -19,7 +19,7 @@ def parse_block(infile):
          assert len(tokens)==len(keys)
          specs.append(tokens)
       n += 1
-   df = pandas.DataFrame(specs, columns=keys)
+   df = DataFrame(specs, columns=keys)
    return df
 
 def parse_specfile(filename,blocks,verbose=True):

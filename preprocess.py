@@ -49,24 +49,17 @@ class preprocessor:
 
    def filter_entry(self,sec_name,key,keep_regex):
       filtered_block = self.blocks[sec_name].\
-                          set_index(key,drop=False).\
+                          set_index(key).\
                           filter(regex=keep_regex, axis=0)
 
-      self.blocks[sec_name] = filtered_block
-      """
-      loc_entry = self.keys[sec_name].index(key)
-      assert loc_entry >= 0
+      self.blocks[sec_name] = filtered_block.reset_index()
 
-      speclist = self.specs[sec_name]
-      speclist_filtered = []
-      for pattern in keep_regex:
-         prog = re.compile(pattern)
-         speclist_filtered += list(filter(
-                                   lambda x: prog.fullmatch(x[loc_entry]),
-                                   speclist))
-         
-      self.specs[sec_name] = speclist_filtered
-      """
+   def inner_join(self,origblock,otherblock,on):
+      df_origin = self.blocks[origblock]
+      df_other  = self.blocks[otherblock].set_index(on)
+      df_joined = df_origin.join(df_other,on=on,how='inner')
+      self.blocks[origblock] = df_joined
+      
    def create_group(self,sec_names,nametemplate):
 
       def spec_traverse_next(spec_key,sec_names,value,level):
