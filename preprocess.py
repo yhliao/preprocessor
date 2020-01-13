@@ -148,3 +148,8 @@ class preprocessor:
          array += value
       return array
 
+   def get_specdict(self,sec_name,key,value):
+      targetblock = self.blocks[sec_name]
+      matchedrow  = targetblock[targetblock[key]==value]
+
+      return matchedrow.to_dict('records')[0]
