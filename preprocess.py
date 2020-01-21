@@ -148,8 +148,10 @@ class preprocessor:
          array += value
       return array
 
-   def get_specdict(self,sec_name,key,value):
-      targetblock = self.blocks[sec_name]
-      matchedrow  = targetblock[targetblock[key]==value]
+   def get_specdict(self,sec_names,key,value):
+      for sec_name in sec_names:
+         targetblock = self.blocks[sec_name]
+         matchedrow  = targetblock[targetblock[key]==value]
 
-      return matchedrow.to_dict('records')[0]
+         if matchedrow.shape[0] != 0:
+            return matchedrow.to_dict('records')[0]
