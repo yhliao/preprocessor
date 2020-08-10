@@ -119,6 +119,46 @@ class preprocessor:
       self._traverse_group_tree(sec_names,_build_file,nametemplate
                                ,self.verbose)
       
+   def rename_group(self,sec_names,oldtemplate,newtemplate,
+                    force=False):
+
+      def _rename_file(namedict,oldtemplate,newtemplate,force):
+            oldfname = oldtemplate.format(**namedict)
+            newfname = newtemplate.format(**namedict)
+            if os.path.exists(oldfname) and (oldfname != newfname):
+               if force:
+                  print ("Renaming file {0} -> {1}".\
+                         format(oldfname,newfname))
+                  os.rename(oldfname,newfname)
+               else:
+                  reply = input ("Rename file {0} -> {1} ? ".\
+                                  format(oldfname,newfname))
+                  if reply in ["y","yes"]:
+                     os.rename(oldfname,newfname)
+
+
+      self._traverse_group_tree(sec_names,_rename_file,
+                               oldtemplate,newtemplate,force)
+
+   def remove_group(self,sec_names,oldtemplate,
+                    force=False):
+
+      def _remove_file(namedict,oldtemplate,force):
+            oldfname = oldtemplate.format(**namedict)
+            if os.path.exists(oldfname):
+               if force:
+                  print ("Removing file {0}".\
+                         format(oldfname))
+                  subprocess.call(['rm','-rf',oldfname])
+               else:
+                  reply = input ("Remove file {0}? ".\
+                                  format(oldfname))
+                  if reply in ["y","yes"]:
+                     subprocess.call(['rm','-rf',oldfname])
+
+      self._traverse_group_tree(sec_names,_remove_file,
+                               oldtemplate,force)
+                               
    def create_links(self,sec_names,sourcetemplate,desttemplate):
 
       def _build_link(namedict,sourcetemplate,desttemplate,verbose):
