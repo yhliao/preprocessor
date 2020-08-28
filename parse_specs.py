@@ -1,4 +1,4 @@
-
+from pandas import DataFrame
 def parse_block(infile):
    keys  = []
    specs = []
@@ -19,9 +19,11 @@ def parse_block(infile):
          assert len(tokens)==len(keys)
          specs.append(tokens)
       n += 1
-   return keys, specs
+   df = DataFrame(specs, columns=keys)
+   return df
 
-def parse_specfile(filename,blocks_key,blocks_specs,verbose=True):
+def parse_specfile(filename,blocks,verbose=True):
+   ## blocks[newblockname] = DataFrame_from_new_block
    with open(filename,"r") as infile:
       EOF = False
       while not EOF: 
@@ -43,26 +45,20 @@ def parse_specfile(filename,blocks_key,blocks_specs,verbose=True):
                   newblockname = tokens[1]
                   if verbose:
                      print ("Start reading new block ",newblockname)
-                  newblockkey, newblockspecs = parse_block(infile)
-                  blocks_key  [newblockname] = newblockkey
-                  blocks_specs[newblockname] = newblockspecs
+                  blocks [newblockname] = parse_block(infile)
 
                else:
                   print ("parse_specfile: token {0} not recognizable".format(tokens[0]))
                   raise AssertionError
       infile.close()
-   return blocks_key, blocks_specs
+   return blocks
 
 def lookup_spec(groups,key,value,specfile,verbose=False):
-   blocks_key, blocks_specs = parse_specfile(specfile,{},{},verbose)
+   blocks = parse_specfile(specfile,{},verbose)
    for group in groups:
 
-      keys = blocks_key[group]
-      idx = keys.index(key)
-      assert idx >= 0
-
-      for spec_list in blocks_specs[group]:
-         if spec_list[idx] == value:
-            return (dict(zip(keys,spec_list)))
+      for row in blocks[group].iterrows():
+         if row[1][key] == value:
+            return dict(row[1])
 
    raise AssertionError("lookup_spec: Not found")
